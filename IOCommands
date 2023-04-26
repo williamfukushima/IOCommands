@@ -1,0 +1,54 @@
+from pynput.keyboard import Key, KeyCode, Controller, Listener
+import json
+
+
+
+def forward():
+    print("Walking forward")
+
+keyboard = Controller()
+from pynput.keyboard import Key, Listener
+
+#region LoadCommandConfig
+# Opening JSON file
+file = open('commands.json')
+  
+# returns JSON object as 
+# a dictionary
+commands = json.load(file)
+  
+# Iterating through the json
+# list
+
+# Show all possible commands
+print("Available commands:")
+for command in commands:
+    print(commands[command] + ": " + command)
+
+# closing file
+file.close()
+#endregion
+
+
+
+def on_press(key: KeyCode | Key):
+    for command in commands:
+        if isinstance(key, Key):
+            if key.name == command:
+                globals()[commands[command]]()
+        else:
+            if key.char == command:
+                globals()[commands[command]]()
+
+def on_release(key):
+    print('{0} release'.format(
+        key))
+    if key == Key.esc:
+        # Stop listener
+        return False
+
+# Collect events until released
+with Listener(
+        on_press=on_press,
+        on_release=on_release) as listener:
+    listener.join()
